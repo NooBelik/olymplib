@@ -3,31 +3,62 @@
 
 using namespace olymplib;
 
-class PreAllocatedAct : public ::testing::Test {
+class PreAllocatedActCorrectness : public ::testing::Test {
 protected:
-    static constexpr int TESTLEN = 1e7;
+    static constexpr int TESTLEN = 1e8;
     long long* memory;
 
-    PreAllocatedAct() {
+    PreAllocatedActCorrectness() {
         memory = new long long[TESTLEN];
         for (int i = 0; i < TESTLEN; ++i) {
             memory[i] = i;
         }
     }
 
-    virtual ~PreAllocatedAct() {
+    virtual ~PreAllocatedActCorrectness() {
         for (int i = 0; i < TESTLEN; ++i) {
             EXPECT_EQ(memory[i], 1LL * i * i);
         }
         delete[] memory;
     }
+
 };
 
-TEST_F(PreAllocatedAct, SquareCorrectness) {
+TEST_F(PreAllocatedActCorrectness, SquareCorrectness) {
     CallStuff(memory, memory + TESTLEN, [](long long& a) { a *= a; });
 }
 
-TEST_F(PreAllocatedAct, ParallelSquareCorrectness) {
+TEST_F(PreAllocatedActCorrectness, ParallelSquareCorrectness) {
+    CallStuff(memory, memory + TESTLEN, [](long long& a) { a *= a; }, 2);
+}
+
+class PreAllocatedActPerfomance : public ::testing::Test {
+protected:
+    static long long* memory;
+    static constexpr int TESTLEN = 1e9;
+
+    PreAllocatedActPerfomance() {
+    }
+
+    virtual ~PreAllocatedActPerfomance() {
+    }
+
+    static void SetUpTestCase() {
+      memory = new long long[TESTLEN];
+    }
+
+    static void TearDownTestCase() {
+      delete[] memory;
+    }
+};
+
+long long* PreAllocatedActPerfomance::memory;
+
+TEST_F(PreAllocatedActPerfomance, SquareCorrectness) {
+    CallStuff(memory, memory + TESTLEN, [](long long& a) { a *= a; });
+}
+
+TEST_F(PreAllocatedActPerfomance, ParallelSquareCorrectness) {
     CallStuff(memory, memory + TESTLEN, [](long long& a) { a *= a; }, 2);
 }
 

@@ -6,7 +6,7 @@ set(PROJECT_NAME MyProject)
 project(${PROJECT_NAME})
 
 set (CMAKE_CXX_STANDARD 11)
-set (CMAKE_CXX_FLAGS "-g -Wall -std=c++11")
+set (CMAKE_CXX_FLAGS "-g -Wall -std=c++11 -O2")
 
 add_library(act act.cpp)
 add_executable(main main.cpp)
