@@ -3,31 +3,35 @@
 
 using namespace olymplib;
 
-TEST(SIMPLE_ACT, SQUARE) {
-    constexpr int TESTLEN = 1e8;
-    long long* a = new long long[TESTLEN];
-    for (int i = 0; i < TESTLEN; ++i) {
-        a[i] = i;
+class PreAllocatedAct : public ::testing::Test {
+protected:
+    static constexpr int TESTLEN = 1e7;
+    long long* memory;
+
+    PreAllocatedAct() {
+        memory = new long long[TESTLEN];
+        for (int i = 0; i < TESTLEN; ++i) {
+            memory[i] = i;
+        }
     }
-    CallStuff(a, a + TESTLEN, [](long long& a) { a *= a; });
-    
-    for (int i = 0; i < TESTLEN; ++i) {
-        EXPECT_EQ(a[i], 1LL * i * i);
+
+    virtual ~PreAllocatedAct() {
+        for (int i = 0; i < TESTLEN; ++i) {
+            EXPECT_EQ(memory[i], 1LL * i * i);
+        }
+        delete[] memory;
     }
-    delete[] a;
+};
+
+TEST_F(PreAllocatedAct, SquareCorrectness) {
+    CallStuff(memory, memory + TESTLEN, [](long long& a) { a *= a; });
 }
 
-TEST(PARALLEL_ACT, SQUARE) {
-    constexpr int TESTLEN = 1e8;
-    long long* a = new long long[TESTLEN];
-    for (int i = 0; i < TESTLEN; ++i) {
-        a[i] = i;
-    }
-    CallStuff(a, a + TESTLEN, [](long long& a) { a *= a; }, 4);
-    
-    for (int i = 0; i < TESTLEN; ++i) {
-        EXPECT_EQ(a[i], 1LL * i * i);
-    }
-    delete[] a;
+TEST_F(PreAllocatedAct, ParallelSquareCorrectness) {
+    CallStuff(memory, memory + TESTLEN, [](long long& a) { a *= a; }, 2);
 }
 
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
