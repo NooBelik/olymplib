@@ -5,4 +5,4 @@ namespace olymplib {
 struct TOutputStream {
 }; 
 
-} // namespace olymplib
+} //namespace olymplib
