@@ -8,10 +8,10 @@ project(${PROJECT_NAME})
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS "-g -Wall -std=c++11 -O2")
 
-add_library(act act.cpp)
+add_library(segtree segtree.cpp)
 add_executable(main main.cpp)
 
-target_link_libraries(main act)
+target_link_libraries(main segtree)
 
 if (APPLE)
   add_definitions(-DGTEST_USE_OWN_TR1_TUPLE)
@@ -27,9 +27,9 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 ##############
 # Unit Tests
 ##############
-add_executable(act_ut act_ut.cpp)
+add_executable(segtree_ut segtree_ut.cpp)
 
-target_link_libraries(act_ut gtest gtest_main)
-target_link_libraries(act_ut act)
+target_link_libraries(segtree_ut gtest gtest_main)
+target_link_libraries(segtree_ut segtree)
 
-add_test(NAME act COMMAND act_ut)
+add_test(NAME segtree COMMAND segtree_ut)
